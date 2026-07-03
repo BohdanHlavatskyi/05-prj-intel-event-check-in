@@ -80,6 +80,16 @@ function getWinningTeams(counts) {
   return winners;
 }
 
+function getWinningTeam(counts) {
+  var winners = getWinningTeams(counts);
+
+  if (winners.length === 0) {
+    return "";
+  }
+
+  return winners[0];
+}
+
 function renderAttendees() {
   attendeeListElement.innerHTML = "";
 
@@ -114,7 +124,7 @@ function renderCounts() {
   var counts = getTeamCounts();
   var totalCount = state.attendees.length;
   var progressPercent = Math.min((totalCount / ATTENDANCE_GOAL) * 100, 100);
-  var winners = getWinningTeams(counts);
+  var winningTeam = getWinningTeam(counts);
 
   attendeeCountElement.textContent = totalCount;
   progressBarElement.style.width = progressPercent + "%";
@@ -127,38 +137,20 @@ function renderCounts() {
   teamCardElements.zero.classList.remove("winning-team");
   teamCardElements.power.classList.remove("winning-team");
 
-  for (var i = 0; i < winners.length; i += 1) {
-    teamCardElements[winners[i]].classList.add("winning-team");
+  if (winningTeam) {
+    teamCardElements[winningTeam].classList.add("winning-team");
   }
 
-  if (totalCount >= ATTENDANCE_GOAL && winners.length > 0) {
+  if (totalCount >= ATTENDANCE_GOAL && winningTeam) {
     celebrationBannerElement.textContent =
       "Celebration! The attendance goal has been reached, and " +
-      getWinningTeamMessage(winners) +
-      (winners.length === 1 ? " is leading." : " are leading.");
+      teamLabels[winningTeam] +
+      " is leading.";
     celebrationBannerElement.classList.add("show");
   } else {
     celebrationBannerElement.textContent = "";
     celebrationBannerElement.classList.remove("show");
   }
-}
-
-function getWinningTeamMessage(winners) {
-  if (winners.length === 1) {
-    return teamLabels[winners[0]];
-  }
-
-  if (winners.length === 2) {
-    return teamLabels[winners[0]] + " and " + teamLabels[winners[1]];
-  }
-
-  return (
-    teamLabels[winners[0]] +
-    ", " +
-    teamLabels[winners[1]] +
-    ", and " +
-    teamLabels[winners[2]]
-  );
 }
 
 function renderAll() {
